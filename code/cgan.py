@@ -25,7 +25,7 @@ from helpers.datagenerator_keras import DataGenerator, FakeDataGenerator
 # from generator import GeneratorConvEncDec, GeneratorEncDec, GeneratorEncDecTeacherForcing, GeneratorVan
 # from generator import GeneratorEncDecTeacherForcingNoAtt as GeneratorEncDecTeacherForcing
 # from generator import GeneratorEncDecTeacherForcingNoAttSelu as GeneratorEncDecTeacherForcing
-from generator import GeneratorEncDecTeacherForcingNoAttSeluShared as GeneratorEncDecTeacherForcing
+from generator import GeneratorEncDecTeacherForcingNoAttSeluSharedV2 as GeneratorEncDecTeacherForcing
 from discriminator import DiscriminatorV2 as Discriminator
 
 from helpers.utils import llprint
