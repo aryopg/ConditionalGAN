@@ -1,2 +1,2 @@
-# ConditionalGAN
-Conditional GAN using TF-GAN
+# Conditional-DebateGAN
+Conditional DebateGAN
