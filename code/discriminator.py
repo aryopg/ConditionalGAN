@@ -173,8 +173,11 @@ class DiscriminatorV2(nn.Module):
             topv, topi = input_sent.data.topk(1)
             ni = topi
             # input_sent_v = autograd.Variable(torch.LongTensor([[ni]]))
-            input_sent = autograd.Variable(torch.LongTensor(ni))
-            
+            if ni.type() == 'torch.cuda.LongTensor':
+                input_sent = autograd.Variable(ni)
+            else:
+                input_sent = autograd.Variable(torch.LongTensor(ni))
+
         input_sent = input_sent.cuda() if use_cuda else input_sent
 
         input_sent = self.embeddings(input_sent.squeeze())
@@ -198,7 +201,7 @@ class DiscriminatorV2(nn.Module):
 
         x = x.contiguous().view(self.batch_size, -1)
         # x = x.view(self.batch_size, -1)
-	    # print x
+        # print x
         x = F.relu(self.fc_1(x))
         x = F.relu(self.fc_2(x))
         output = self.sigmoid(self.fc_out(x))

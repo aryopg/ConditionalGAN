@@ -24,9 +24,12 @@ if use_cuda:
 
 def sample_gumbel(shape, eps=1e-20):
     """Sample from Gumbel(0, 1)"""
-    U = torch.Tensor(shape).uniform_(0, 1)
+    U = torch.Tensor(shape).uniform_(0, 1)# + eps
     U = autograd.Variable(U)
-    U = U.cuda if use_cuda else U
+    U = U.cuda() if use_cuda else U
+    # eps = autograd.Variable(torch.Tensor(eps), requires_grad=False)
+    # eps = eps.cuda() if use_cuda else eps
+    # return -torch.log(-torch.log(U + eps) + eps)
     return -torch.log(-torch.log(U + eps) + eps)
 
 class GeneratorEncDec(nn.Module):
