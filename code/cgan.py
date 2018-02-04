@@ -30,7 +30,8 @@ from discriminator import DiscriminatorV2 as Discriminator
 
 from helpers.utils import llprint
 
-from loss import batchNLLLoss, JSDLoss#, MMDLoss
+from loss import batchNLLLossV2 as batchNLLLoss
+from loss import JSDLoss#, MMDLoss
 
 torch.manual_seed(1)
 use_cuda = torch.cuda.is_available()
@@ -43,9 +44,9 @@ train_data_dir = os.path.join(processed_data_dir, 'train')
 test_data_dir = os.path.join(processed_data_dir, 'test')
 INV_LEXICON_DICTIONARY = pickle.load(open('../data_keras/lexicon-dict-inverse.pkl', 'rb'))
 
-pretrain_netD = 'last_checkpoint_vanilla_pretrain_encdec_Disc_26Jan.pth.tar'
-pretrain_netG = 'last_checkpoint_vanilla_pretrain_encdec_Gen_26Jan.pth.tar'
-train_GAN = 'last_checkpoint_vanilla_encdec_SELU_26Jan.pth.tar'
+pretrain_netD = 'last_checkpoint_vanilla_pretrain_encdec_Disc_3Feb.pth.tar'
+pretrain_netG = 'last_checkpoint_vanilla_pretrain_encdec_Gen_3Feb_NLLV2.pth.tar'
+train_GAN = 'last_checkpoint_vanilla_encdec_SELU_3Feb_NLLV2.pth.tar'
 
 def decode(out):
     ret = []
@@ -126,6 +127,7 @@ def pretrain(run_name, netD, netG, motion_length, claim_length, embedding_dim, h
     netD.batch_size = netD.batch_size*2
 
     for iteration in xrange(start_epoch,epochs+1):
+        break
         print(" >>> Epoch : %d/%d" % (iteration+1,epochs))
         start_time = time.time()
 
@@ -457,7 +459,7 @@ def train(run_name, netG, netD, motion_length, claim_length, embedding_dim, hidd
                 real_claim_test_v = autograd.Variable(real_claim_test)
 
                 fake = netG(real_motion_test_v, real_claim_test_v, 0.0)
-                G_NLL_loss += nllloss(fake, real_claim_test_v, claim_length)/batch_size
+                G_NLL_loss = nllloss(fake, real_claim_test_v, claim_length)/batch_size
                 G_NLL_loss_total += G_NLL_loss.cpu().data.numpy()[0]
 
                 for mot, cla in zip(decode_motion(motion_test), decode(fake)):
@@ -482,7 +484,7 @@ if __name__ == '__main__':
     hidden_dim_G = 128
     hidden_dim_D = 300
     lam = 10
-    pretrain_epochs = 1000
+    pretrain_epochs = 50
     epochs = 1000000
     iteration_d = 5
     iteration_g = 1

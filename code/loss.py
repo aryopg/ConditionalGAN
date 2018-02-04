@@ -70,6 +70,29 @@ class batchNLLLoss(nn.Module):
 
         return loss
 
+class batchNLLLossV2(nn.Module):
+    def __init__(self):
+        super(batchNLLLossV2, self).__init__()
+
+    def forward(self, synt, target, claim_length=20):
+        """
+        Returns the NLL Loss for predicting target sequence.
+        Inputs: inp, target
+            - inp: batch_size x seq_len
+            - target: batch_size x seq_len
+            inp should be target with <s> (start letter) prepended
+        """
+
+        loss_fn = nn.NLLLoss()
+
+        loss = 0
+
+        for i in range(synt.shape[0]):
+            for j in range(claim_length):
+                loss += loss_fn(synt[i][j].unsqueeze(0), target[i][j])
+
+        return loss
+
 class JSDLoss(nn.Module):
     def __init__(self):
         super(JSDLoss,self).__init__()
@@ -86,7 +109,7 @@ class JSDLoss(nn.Module):
 
         cov_real, mean_real = cov(f_real)
         cov_fake, mean_fake = cov(f_synt)
-        
+
         f_real_mean = torch.mean(f_real, 0, keepdim=True)
         f_synt_mean = torch.mean(f_synt, 0, keepdim=True)
 

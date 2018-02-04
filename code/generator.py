@@ -880,6 +880,8 @@ class GeneratorEncDecTeacherForcingNoAttSeluSharedV2(nn.Module):
         decoder_output_full = decoder_output_full.cuda() if use_cuda else decoder_output_full
         target = target_output.permute(1,0)
 
+        use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
+
         for idx in range(self.claim_length):
             if idx == 0:
                 decoder_input = SOS_token
@@ -888,8 +890,6 @@ class GeneratorEncDecTeacherForcingNoAttSeluSharedV2(nn.Module):
             output = self.dropout(output)
 
             output = self.selu(output)
-
-            use_teacher_forcing = True# if random.random() < teacher_forcing_ratio else False
 
             if use_teacher_forcing:
                 decoder_output, decoder_hidden = self.decoder_gru(output, decoder_hidden)
@@ -909,10 +909,11 @@ class GeneratorEncDecTeacherForcingNoAttSeluSharedV2(nn.Module):
                 decoder_output = F.softmax(out / temp, dim=1)
                 # decoder_output = (self.decoder_embeddings.weight * decoder_output.unsqueeze(1)).sum(0).view(1, 1, -1)
                 topv, topi = decoder_output.data.topk(1)
-                ni = topi[0][0]
+                # print topi
+                ni = topi
                 # decoder_input_v = autograd.Variable(torch.LongTensor([[ni]]))
-                decoder_input = autograd.Variable(torch.LongTensor([[ni]]))
-                decoder_input = decoder_input.cuda() if use_cuda else decoder_input
+                decoder_input = autograd.Variable(ni)
+                # decoder_input = decoder_input.cuda() if use_cuda else decoder_input
                 # print decoder_input
                 decoder_output_full[idx, :, :] = decoder_output
 

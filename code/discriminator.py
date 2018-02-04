@@ -170,13 +170,15 @@ class DiscriminatorV2(nn.Module):
         # else:
         #     hidden = hidden
         if(len(input_sent.shape)==3):
-            topv, topi = input_sent.data.topk(1)
-            ni = topi
+            # topv, topi = input_sent.data.topk(1)
+            # ni = topi
+            topv, topi = torch.max(input_sent, 2)
+            input_sent = topi
             # input_sent_v = autograd.Variable(torch.LongTensor([[ni]]))
-            if ni.type() == 'torch.cuda.LongTensor':
-                input_sent = autograd.Variable(ni)
-            else:
-                input_sent = autograd.Variable(torch.LongTensor(ni))
+            # if type(ni) == 'torch.cuda.LongTensor':
+            #     input_sent = autograd.Variable(ni)
+            # else:
+            #     input_sent = autograd.Variable(torch.LongTensor(ni))
 
         input_sent = input_sent.cuda() if use_cuda else input_sent
 
